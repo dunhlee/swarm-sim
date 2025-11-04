@@ -17,7 +17,7 @@ pub struct RpcRequest {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RpcResponse {
-    pub json_rpc: String,
+    pub jsonrpc: String,
     pub id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub result: Option<Value>,
@@ -28,7 +28,7 @@ pub struct RpcResponse {
 impl RpcResponse {
     pub fn success(id: Option<u64>, result: Value) -> Self {
         Self {
-            json_rpc: "2.0".into(),
+            jsonrpc: "2.0".into(),
             id,
             result: Some(result),
             error: None
@@ -37,7 +37,7 @@ impl RpcResponse {
 
     pub fn error(id: Option<u64>, error_code: i32, message: &str) -> Self {
         Self {
-            json_rpc: "2.0".into(),
+            jsonrpc: "2.0".into(),
             id,
             result: None,
             error: Some(RpcError {
