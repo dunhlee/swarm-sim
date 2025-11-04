@@ -1,6 +1,7 @@
 use anyhow::Result;
 
 mod network;
+mod protocol;
 
 #[tokio::main]
 async fn main() -> Result<()> {
