@@ -5,7 +5,7 @@ use serde_json::Value;
 // client request to server
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RpcRequest {
-    pub json_rpc: String,
+    pub jsonrpc: String,
     pub id: Option<u64>,
     pub method: String,
     #[serde(default)]
@@ -15,7 +15,7 @@ pub struct RpcRequest {
 
 // server response to client
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct RpcResponse {
     pub json_rpc: String,
     pub id: Option<u64>,
