@@ -6,6 +6,7 @@ use anyhow::Result;
 use serde_json::json;
 use crate::protocol::{RpcResponse, RpcRequest};
 use crate::dispatcher::RpcDispatcher;
+use crate::protocol::protocol::RpcErrorCode;
 
 pub async fn start_websocket_server(socket_addr: &str, rpc_dispatcher: RpcDispatcher) -> Result<()>
 {
@@ -38,7 +39,7 @@ async fn handle_connection(stream: tokio::net::TcpStream, rpc_dispatcher: RpcDis
                     let json = serde_json::to_string(&response)?;
                     write.send(Message::Text(json)).await?;
                 } else {
-                    let error = RpcResponse::error(Some(0), -1, "Invalid JSON-RPC request");
+                    let error = RpcResponse::error(Some(0), RpcErrorCode::InvalidRequest.into());
                     let json = serde_json::to_string(&error)?;
                     write.send(Message::Text(json)).await?;
                 }

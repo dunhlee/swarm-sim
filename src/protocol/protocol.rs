@@ -1,4 +1,3 @@
-use futures_util::future::err;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -35,24 +34,64 @@ impl RpcResponse {
         }
     }
 
-    pub fn error(id: Option<u64>, error_code: i32, message: &str) -> Self {
+    pub fn error(id: Option<u64>, error_code: RpcErrorCode) -> Self {
         Self {
             jsonrpc: "2.0".into(),
             id,
             result: None,
-            error: Some(RpcError {
-                code: error_code,
-                message: message.into(),
-                data: None
-            }),
+            error: Some(RpcError::from(error_code)),
         }
     }
 }
+
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum RpcErrorCode {
+    ParseError = -32700,
+    InvalidRequest = -32600,
+    MethodNotFound = -32601,
+    InvalidParams = -32602,
+    InternalError = -32603,
+    ServerUnavailable = -32604,
+    Timeout = -32605,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct RpcError {
-    pub code: i32,
+    pub code: RpcErrorCode,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<Value>,
 }
+
+impl RpcError {
+    pub fn new(error_code: RpcErrorCode, message: &str, data: Option<Value>) -> Self {
+        Self {
+            code: error_code,
+            message: message.into(),
+            data
+        }
+    }
+}
+
+impl From<RpcErrorCode> for RpcError {
+    fn from(code: RpcErrorCode) -> Self {
+        RpcError::new(code, code.to_string().as_str(), None)
+    }
+}
+
+impl std::fmt::Display for RpcErrorCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} ({})", *self as i32, match self {
+            RpcErrorCode::ParseError => "Parse Error",
+            RpcErrorCode::InvalidRequest => "Invalid Request",
+            RpcErrorCode::MethodNotFound => "Method Not Found",
+            RpcErrorCode::InvalidParams => "Invalid Params",
+            RpcErrorCode::InternalError => "Internal Error",
+            RpcErrorCode::ServerUnavailable => "Server Unavailable",
+            RpcErrorCode::Timeout => "Timeout",
+        })
+    }
+}
+

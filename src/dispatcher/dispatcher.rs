@@ -4,6 +4,7 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 use serde_json::Value;
 use crate::protocol::{RpcRequest, RpcResponse};
+use crate::protocol::protocol::RpcErrorCode;
 
 // Each function handler takes in json parameters and returns json parameters
 pub type FunctionHandler = Arc<dyn Fn(Value) -> Pin<Box<dyn Future<Output = Value> + Send>> + Send + Sync>;
@@ -40,7 +41,7 @@ impl RpcDispatcher {
             response = RpcResponse::success(request.id, result)
         }
         else {
-            response = RpcResponse::error(request.id, -1, "Method not found");
+            response = RpcResponse::error(request.id, RpcErrorCode::MethodNotFound.into());
         }
 
         response
