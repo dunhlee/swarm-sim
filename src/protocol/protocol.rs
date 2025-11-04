@@ -57,18 +57,18 @@ pub enum RpcErrorCode {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct RpcError {
-    pub code: RpcErrorCode,
+    pub code: i32,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<Value>,
 }
 
 impl RpcError {
-    pub fn new(error_code: RpcErrorCode, message: &str, data: Option<Value>) -> Self {
+    pub fn new(error_code: i32, message: &str, data: Option<Value>) -> Self {
         Self {
-            code: error_code,
+            code: error_code as i32,
             message: message.into(),
             data
         }
@@ -77,13 +77,13 @@ impl RpcError {
 
 impl From<RpcErrorCode> for RpcError {
     fn from(code: RpcErrorCode) -> Self {
-        RpcError::new(code, code.to_string().as_str(), None)
+        RpcError::new(code as i32, code.to_string().as_str(), None)
     }
 }
 
 impl std::fmt::Display for RpcErrorCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} ({})", *self as i32, match self {
+        write!(f, "{}", match self {
             RpcErrorCode::ParseError => "Parse Error",
             RpcErrorCode::InvalidRequest => "Invalid Request",
             RpcErrorCode::MethodNotFound => "Method Not Found",

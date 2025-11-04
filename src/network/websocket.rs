@@ -3,7 +3,7 @@ use tokio_tungstenite::{accept_async};
 use tokio_tungstenite::tungstenite::Message;
 use futures_util::{StreamExt, SinkExt};
 use anyhow::Result;
-use serde_json::json;
+
 use crate::protocol::{RpcResponse, RpcRequest};
 use crate::dispatcher::RpcDispatcher;
 use crate::protocol::protocol::RpcErrorCode;

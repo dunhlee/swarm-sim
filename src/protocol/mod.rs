@@ -1,2 +1,2 @@
 pub mod protocol;
-pub use protocol::{RpcRequest, RpcResponse, RpcError};
+pub use protocol::{RpcRequest, RpcResponse};
