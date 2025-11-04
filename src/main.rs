@@ -2,6 +2,7 @@ use anyhow::Result;
 
 mod network;
 mod protocol;
+mod dispatcher;
 
 #[tokio::main]
 async fn main() -> Result<()> {
