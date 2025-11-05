@@ -34,10 +34,16 @@ async fn handle_connection(stream: tokio::net::TcpStream, rpc_dispatcher: RpcDis
     while let Some(message) = read.next().await {
         match message {
             Ok(Message::Text(text)) => {
+                // deserialize json from stream into an RpcRequest Struct
                 if let Ok(req) = serde_json::from_str::<RpcRequest>(&text) {
+
+                    // dispatch the request to the handler
                     let response = rpc_dispatcher.dispatch(req).await;
+
+                    // serialize the response as json and send it back to the client
                     let json = serde_json::to_string(&response)?;
                     write.send(Message::Text(json)).await?;
+
                 } else {
                     let error = RpcResponse::error(Some(0), RpcErrorCode::InvalidRequest.into());
                     let json = serde_json::to_string(&error)?;

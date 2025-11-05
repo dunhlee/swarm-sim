@@ -11,7 +11,6 @@ pub struct RpcRequest {
     pub params: Value, // Value's default value is null. serde default will default to null if there are no parameters.
 }
 
-
 // server response to client
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -68,7 +67,7 @@ pub struct RpcError {
 impl RpcError {
     pub fn new(error_code: i32, message: &str, data: Option<Value>) -> Self {
         Self {
-            code: error_code as i32,
+            code: error_code,
             message: message.into(),
             data
         }
