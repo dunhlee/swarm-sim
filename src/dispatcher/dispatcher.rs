@@ -32,18 +32,19 @@ impl RpcDispatcher {
     }
 
     pub async fn dispatch(&self, request: RpcRequest) -> RpcResponse {
-        let command_map = self.commands.read().await;
-        let response: RpcResponse;
 
-        if let Some(command) = command_map.get(&request.method) {
-            let result = command.execute(request.params).await;
+        if request.is_valid()
+        {
+            let command_map = self.commands.read().await;
 
-            response = RpcResponse::success(request.id, result)
+            return if let Some(command) = command_map.get(&request.method) {
+                let result = command.execute(request.params).await;
+                RpcResponse::success(request.id, result)
+            } else {
+                RpcResponse::error(request.id, RpcErrorCode::MethodNotFound.into())
+            }
         }
-        else {
-            response = RpcResponse::error(request.id, RpcErrorCode::MethodNotFound.into());
-        }
 
-        response
+        RpcResponse::error(request.id, RpcErrorCode::InvalidRequest.into())
     }
 }

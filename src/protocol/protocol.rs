@@ -11,6 +11,16 @@ pub struct RpcRequest {
     pub params: Value, // Value's default value is null. serde default will default to null if there are no parameters.
 }
 
+impl RpcRequest {
+    pub fn is_valid(&self) -> bool {
+        if self.jsonrpc.trim() != "2.0" || self.method.is_empty()
+        {
+            false;
+        }
+        true
+    }
+}
+
 // server response to client
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
