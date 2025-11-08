@@ -1,9 +1,11 @@
-[package]
-name = "swarm-sim"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+members = [
+    "common",
+    "simulation_service",
+    "telemetry_service",
+]
 
-[dependencies]
+[workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.23"
 tungstenite = "0.23"

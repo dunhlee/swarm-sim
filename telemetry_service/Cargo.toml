@@ -1,0 +1,12 @@
+[package]
+name = "telemetry_service"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+common = { path = "../common" }
+serde_json = { workspace = true }
+futures-util = { workspace = true}
+futures = "0.3.31"
+anyhow = { workspace = true}
+tokio = {workspace = true}

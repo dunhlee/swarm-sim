@@ -1,8 +1,6 @@
 use std::collections::HashMap;
-use std::pin::Pin;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use serde_json::Value;
 use crate::protocol::{RpcRequest, RpcResponse};
 use crate::protocol::protocol::RpcErrorCode;
 use crate::commands::command::Command;
@@ -35,6 +33,7 @@ impl RpcDispatcher {
 
         if request.is_valid()
         {
+            // acquire lock
             let command_map = self.commands.read().await;
 
             return if let Some(command) = command_map.get(&request.method) {

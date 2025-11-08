@@ -1,0 +1,21 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2021"   # or 2024
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+# use workspace-wide shared dependencies (from the root Cargo.toml)
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tokio-tungstenite = {workspace = true}
+tungstenite = {workspace = true}
+futures-util = {workspace = true}
+
+# local crate-specific dependencies
+async-trait = "0.1"
+async-nats = "0.45.0"
