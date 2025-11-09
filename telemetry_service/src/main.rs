@@ -5,11 +5,11 @@ use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let new_client = messaging::connect_nats("nats://127.0.0.1:4222").await?;
+    let client = messaging::connect_nats("nats://127.0.0.1:4222").await?;
 
     println!("Telemetry subscriber listening on simulation-updates");
 
-    subscribe_json::<SimulationUpdate, _>(&new_client, "simulation-updates", |data| {
+    subscribe_json::<SimulationUpdate, _>(&client, "simulation-updates", |data| {
         println!("Received message: {:?}", data);
     }).await?;
 

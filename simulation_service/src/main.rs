@@ -10,7 +10,7 @@ use common::message_layer::messaging::publish_json;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let new_client = messaging::connect_nats("nats://127.0.0.1:4222").await?;
+    let client = messaging::connect_nats("nats://127.0.0.1:4222").await?;
     println!("Telemetry publisher listening on simulation-updates");
 
     let update_message: SimulationUpdate = SimulationUpdate
@@ -22,7 +22,7 @@ async fn main() -> Result<()> {
 
     loop
     {
-        publish_json(&new_client, "simulation-updates", &update_message).await?;
+        publish_json(&client, "simulation-updates", &update_message).await?;
 
         println!("Published Update");
         sleep(Duration::from_secs(1)).await;
