@@ -2,24 +2,27 @@ use common::dispatcher::RpcDispatcher;
 use common::network::run_server;
 use common::commands::command::Command;
 use common::message_layer::messaging;
+use common::message_types::types::SimulationUpdate;
 use serde_json::{json, Value};
 use tokio::time::{sleep, Duration};
-
+use anyhow::Result;
+use common::message_layer::messaging::publish_json;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<()> {
     let new_client = messaging::connect_nats("nats://127.0.0.1:4222").await?;
+    println!("Telemetry publisher listening on simulation-updates");
+
+    let update_message: SimulationUpdate = SimulationUpdate
+    {
+        id: 1,
+        tick: 1,
+        position: [1.0, 3.0, 4.0],
+    };
 
     loop
     {
-        let telemetry = json!({
-            "agent_id": 1,
-            "pos": [12.3, 7.8],
-            "status": "OK",
-        });
-
-        let payload = serde_json::to_vec(&telemetry)?;
-        new_client.publish("Telemetry.updates:", payload.into()).await?;
+        publish_json(&new_client, "simulation-updates", &update_message).await?;
 
         println!("Published Update");
         sleep(Duration::from_secs(1)).await;
