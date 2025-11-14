@@ -1,49 +1,42 @@
 use std::collections::HashMap;
 use std::sync::Arc;
+
 use tokio::sync::RwLock;
-use crate::protocol::{RpcRequest, RpcResponse};
-use crate::protocol::protocol::RpcErrorCode;
 use crate::commands::command::Command;
 
-// Each function handler takes in json parameters and returns json parameters
-pub type CommandMap = Arc<RwLock<HashMap<String, Arc<dyn Command>>>>;
+// The dispatcher stores commands indexed by their NATS subject.
+pub type CommandMap = Arc<RwLock<HashMap<String, Arc<dyn Command + Send + Sync>>>>;
 
 #[derive(Clone)]
-pub struct RpcDispatcher {
+pub struct Dispatcher {
     commands: CommandMap,
 }
 
-impl RpcDispatcher {
+impl Dispatcher {
     pub fn new() -> Self {
         Self {
             commands: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
+    /// Register a command by the NATS subject it listens to.
     pub async fn register<C>(&self, command: C)
     where
-        C: Command + 'static,
+        C: Command + Send + Sync + 'static,
     {
-        // acquire lock
-        let mut command_map = self.commands.write().await;
-        command_map.insert(command.name().to_string(), Arc::new(command));
+        let mut map = self.commands.write().await;
+        map.insert(command.subject().to_string(), Arc::new(command));
     }
 
-    pub async fn dispatch(&self, request: RpcRequest) -> RpcResponse {
+    /// Dispatch a message to the command responsible for the subject.
+    pub async fn dispatch(&self, subject: &str, payload: &[u8]) {
+        let map = self.commands.read().await;
 
-        if request.is_valid()
-        {
-            // acquire lock
-            let command_map = self.commands.read().await;
-
-            return if let Some(command) = command_map.get(&request.method) {
-                let result = command.execute(request.params).await;
-                RpcResponse::success(request.id, result)
-            } else {
-                RpcResponse::error(request.id, RpcErrorCode::MethodNotFound.into())
-            }
+        if let Some(cmd) = map.get(subject) {
+            cmd.execute(payload).await;
+        } else {
+            eprintln!("[Dispatcher] No command registered for subject: {subject}");
         }
-
-        RpcResponse::error(request.id, RpcErrorCode::InvalidRequest.into())
     }
 }
+
