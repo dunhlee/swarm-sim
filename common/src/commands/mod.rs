@@ -1,2 +1,2 @@
-pub mod command;
-use command::Command;
+pub mod net_command;
+pub mod sim_command;

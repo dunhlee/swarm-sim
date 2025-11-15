@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use tokio::sync::RwLock;
-use crate::commands::command::Command;
+use crate::commands::net_command::NetCommand;
 
 // The dispatcher stores commands indexed by their NATS subject.
-pub type CommandMap = Arc<RwLock<HashMap<String, Arc<dyn Command + Send + Sync>>>>;
+pub type CommandMap = Arc<RwLock<HashMap<String, Arc<dyn NetCommand + Send + Sync>>>>;
 
 #[derive(Clone)]
 pub struct Dispatcher {
@@ -22,7 +22,7 @@ impl Dispatcher {
     /// Register a command by the NATS subject it listens to.
     pub async fn register<C>(&self, command: C)
     where
-        C: Command + Send + Sync + 'static,
+        C: NetCommand + Send + Sync + 'static,
     {
         let mut map = self.commands.write().await;
         map.insert(command.subject().to_string(), Arc::new(command));

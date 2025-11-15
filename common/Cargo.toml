@@ -16,6 +16,7 @@ tokio-tungstenite = {workspace = true}
 tungstenite = {workspace = true}
 futures-util = {workspace = true}
 futures = {workspace = true}
+glam = {workspace = true}
 
 # local crate-specific dependencies
 async-trait = "0.1"

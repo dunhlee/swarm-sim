@@ -4,7 +4,7 @@ use serde_json::value::Value;
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait Command: Send + Sync {
+pub trait NetCommand: Send + Sync {
     /// Which NATS subject does this command respond to?
     fn subject(&self) -> &'static str;
 

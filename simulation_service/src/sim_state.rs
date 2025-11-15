@@ -1,5 +1,5 @@
 use tokio::sync::mpsc;
-use common::commands::command::Command;
+use common::commands::net_command::NetCommand;
 
 pub struct SimulationState
 {
