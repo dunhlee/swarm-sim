@@ -1,3 +1,6 @@
+mod sim_loop;
+mod sim_state;
+
 use common::message_layer::messaging;
 use common::message_types::types::SimulationUpdate;
 use tokio::time::{sleep, Duration};
